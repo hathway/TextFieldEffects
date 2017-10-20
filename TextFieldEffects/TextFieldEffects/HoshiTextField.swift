@@ -56,6 +56,20 @@ import UIKit
         }
     }
 
+    @IBInspectable dynamic open var placeholderFontShrinkScale: CGFloat{
+        set(newValue) {
+            internalPlaceholderFontShrinkScale = max(0, min(newValue, 1))
+        }
+        get {
+            return internalPlaceholderFontShrinkScale
+        }
+    }
+    private var internalPlaceholderFontShrinkScale: CGFloat = 0.8 {
+        didSet {
+            updatePlaceholder()
+        }
+    }
+    
     override open var placeholder: String? {
         didSet {
             updatePlaceholder()
@@ -97,9 +111,12 @@ import UIKit
             UIView.animate(withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1.0, options: .beginFromCurrentState, animations: ({
                 self.placeholderLabel.frame.origin = CGPoint(x: 10, y: self.placeholderLabel.frame.origin.y)
                 self.placeholderLabel.alpha = 0
+                self.placeholderLabel.font = UIFont(name: self.font!.fontName, size: self.font!.pointSize * self.internalPlaceholderFontShrinkScale)
             }), completion: { _ in
                 self.animationCompletionHandler?(.textEntry)
             })
+        } else {
+            self.placeholderLabel.font = UIFont(name: self.font!.fontName, size: self.font!.pointSize * self.internalPlaceholderFontShrinkScale)
         }
     
         layoutPlaceholderInTextRect()
@@ -115,13 +132,18 @@ import UIKit
     override open func animateViewsForTextDisplay() {
         if text!.isEmpty {
             UIView.animate(withDuration: 0.35, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 2.0, options: UIViewAnimationOptions.beginFromCurrentState, animations: ({
-                self.layoutPlaceholderInTextRect()
                 self.placeholderLabel.alpha = 1
+                self.placeholderLabel.font = UIFont(name: self.font!.fontName, size: self.font!.pointSize)
+                self.placeholderLabel.sizeToFit()
+                self.layoutPlaceholderInTextRect()
+
             }), completion: { _ in
                 self.animationCompletionHandler?(.textDisplay)
             })
             
             activeBorderLayer.frame = self.rectForBorder(self.borderThickness.active, isFilled: false)
+        } else {
+            self.placeholderLabel.font = UIFont(name: self.font!.fontName, size: self.font!.pointSize * self.internalPlaceholderFontShrinkScale)
         }
     }
     
