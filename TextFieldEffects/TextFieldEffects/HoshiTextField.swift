@@ -76,6 +76,12 @@ import UIKit
         }
     }
     
+    fileprivate var _placeHolderFontName:String = "Helvetica"
+    @IBInspectable
+    var placeHolderFontName:String?
+    
+    fileprivate var _placeHolderFont:UIFont = UIFont.systemFont(ofSize: 12.0)
+    
     override open var bounds: CGRect {
         didSet {
             updateBorder()
@@ -95,8 +101,19 @@ import UIKit
     override open func drawViewsForRect(_ rect: CGRect) {
         let frame = CGRect(origin: CGPoint.zero, size: CGSize(width: rect.size.width, height: rect.size.height))
         
+        if let placeHolderName = placeHolderFontName {
+            self._placeHolderFontName = placeHolderName
+        } else {
+            self._placeHolderFontName = self.font!.fontName
+        }
+        
+        if let placeHolderFont = UIFont(name: _placeHolderFontName, size: self.font!.pointSize) {
+            _placeHolderFont = placeHolderFont
+        } else {
+            _placeHolderFont = font!
+        }
         placeholderLabel.frame = frame.insetBy(dx: placeholderInsets.x, dy: placeholderInsets.y)
-        placeholderLabel.font = placeholderFontFromFont(font!)
+        placeholderLabel.font = placeholderFontFromFont(_placeHolderFont)
         
         updateBorder()
         updatePlaceholder()
@@ -111,12 +128,12 @@ import UIKit
             UIView.animate(withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1.0, options: .beginFromCurrentState, animations: ({
                 self.placeholderLabel.frame.origin = CGPoint(x: 10, y: self.placeholderLabel.frame.origin.y)
                 self.placeholderLabel.alpha = 0
-                self.placeholderLabel.font = UIFont(name: self.font!.fontName, size: self.font!.pointSize * self.internalPlaceholderFontShrinkScale)
+                self.placeholderLabel.font = UIFont(name: self._placeHolderFont.fontName, size: self._placeHolderFont.pointSize * self.internalPlaceholderFontShrinkScale)
             }), completion: { _ in
                 self.animationCompletionHandler?(.textEntry)
             })
         } else {
-            self.placeholderLabel.font = UIFont(name: self.font!.fontName, size: self.font!.pointSize * self.internalPlaceholderFontShrinkScale)
+            self.placeholderLabel.font = UIFont(name: self._placeHolderFont.fontName, size: self._placeHolderFont.pointSize * self.internalPlaceholderFontShrinkScale)
         }
     
         layoutPlaceholderInTextRect()
@@ -133,7 +150,7 @@ import UIKit
         if text!.isEmpty {
             UIView.animate(withDuration: 0.35, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 2.0, options: UIViewAnimationOptions.beginFromCurrentState, animations: ({
                 self.placeholderLabel.alpha = 1
-                self.placeholderLabel.font = UIFont(name: self.font!.fontName, size: self.font!.pointSize)
+                self.placeholderLabel.font = UIFont(name: self._placeHolderFont.fontName, size: self._placeHolderFont.pointSize)
                 self.placeholderLabel.sizeToFit()
                 self.layoutPlaceholderInTextRect()
 
@@ -143,7 +160,7 @@ import UIKit
             
             activeBorderLayer.frame = self.rectForBorder(self.borderThickness.active, isFilled: false)
         } else {
-            self.placeholderLabel.font = UIFont(name: self.font!.fontName, size: self.font!.pointSize * self.internalPlaceholderFontShrinkScale)
+            self.placeholderLabel.font = UIFont(name: self._placeHolderFont.fontName, size: self._placeHolderFont.pointSize * self.internalPlaceholderFontShrinkScale)
         }
     }
     
