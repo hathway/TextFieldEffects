@@ -78,7 +78,7 @@ import UIKit
     
     fileprivate var _placeHolderFontName:String = "Helvetica"
     @IBInspectable
-    var placeHolderFontName:String?
+    public var placeHolderFontName:String?
     
     fileprivate var _placeHolderFont:UIFont = UIFont.systemFont(ofSize: 12.0)
     
@@ -129,6 +129,7 @@ import UIKit
                 self.placeholderLabel.frame.origin = CGPoint(x: 10, y: self.placeholderLabel.frame.origin.y)
                 self.placeholderLabel.alpha = 0
                 self.placeholderLabel.font = UIFont(name: self._placeHolderFont.fontName, size: self._placeHolderFont.pointSize * self.internalPlaceholderFontShrinkScale)
+                self.placeholderLabel.sizeToFit()
             }), completion: { _ in
                 self.animationCompletionHandler?(.textEntry)
             })
