@@ -161,6 +161,7 @@ import UIKit
             
             activeBorderLayer.frame = self.rectForBorder(self.borderThickness.active, isFilled: false)
         } else {
+            self.placeholderLabel.frame.origin = activePlaceholderPoint
             self.placeholderLabel.font = UIFont(name: self._placeHolderFont.fontName, size: self._placeHolderFont.pointSize * self.internalPlaceholderFontShrinkScale)
         }
     }
